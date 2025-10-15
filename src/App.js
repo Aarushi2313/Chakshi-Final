@@ -18,8 +18,10 @@ import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import SearchResults from "./components/SearchResults";
 import Dashboard from "./components/Dashboard";
-import Analytics from "./Advocate pages/Analytics";
+import AnalyticsDashboard from "./Advocate pages/Analytics";
+import Cases from "./Advocate pages/Cases";
 import Clients from "./Advocate pages/Clients";
 import ContractComparison from "./Advocate pages/ContractComparison";
 import Documents from "./Advocate pages/Documents";
@@ -32,15 +34,39 @@ import Courses from "./Student pages/Courses";
 import Assignments from "./Student pages/Assignments";
 import Library from "./Student pages/Library";
 import MootCourt from "./Student pages/MootCourt";
+import Calendar from "./Student pages/Calendar";
+import Career from "./Student pages/Career-simple";
+import ContentFeed from "./Student pages/ContentFeed-simple";
+import ExamPrep from "./Student pages/ExamPrep";
+import StudentResearch from "./Student pages/Research";
+import StudentSimulation from "./Student pages/Simulation";
+import StudentNotifications from "./Student pages/Notifications";
+import StudentAllFeatures from "./Student pages/AllFeatures";
+import StudentProfile from "./Student pages/Profile";
+import StudentSettings from "./Student pages/Settings";
+import StudentHelp from "./Student pages/Help";
 import ClerkDashboard from "./Clerk components/Dashboard";
 import CaseList from "./Clerk components/CaseList";
 import CaseDetails from "./Clerk components/CaseDetails";
-import FakeCaseChecker from "./Clerk components/FakeCaseChecker";
 import SmsLog from "./Clerk components/SmsLog";
 import QuickActions from "./Clerk components/QuickActions";
 import OfflineModeToggle from "./Clerk components/OfflineModeToggle";
 import ClerkIntegrations from "./Clerk components/Integrations";
 import ClerkSettings from "./Clerk components/Settings";
+import ClerkCalendar from "./Clerk components/Calendar";
+import ClerkDocuments from "./Clerk components/Documents";
+import ClerkReports from "./Clerk components/Reports";
+import ClerkHelp from "./Clerk components/Help";
+import AdminLayout from "./Admin components/Layout";
+import AdminDashboard from "./Admin pages/Dashboard";
+import AdminUsers from "./Admin pages/Users";
+import AdminAnalytics from "./Admin pages/Analytics";
+import AdminPayments from "./Admin pages/Payments";
+import AdminContent from "./Admin pages/Content";
+import AdminSettings from "./Admin pages/Settings";
+import AdminReports from "./Admin pages/Reports";
+import AdminCourses from "./Admin pages/Courses";
+import AdminNotifications from "./Admin pages/Notifications";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -92,20 +118,19 @@ const Home = () => {
       <div className="relative z-10">
         <Hero />
         <div className="stagger-fade-in">
-          <Stats />
+          <RoleGateway />
         </div>
         <div className="stagger-fade-in">
-          <FreeQueryWidget />
+          <Features />
         </div>
         <div className="stagger-fade-in">
           <FreeTools />
         </div>
         <div className="stagger-fade-in">
-          <Features />
+          <FreeQueryWidget />
         </div>
-       
         <div className="stagger-fade-in">
-          <RoleGateway />
+          <Stats />
         </div>
         <div className="stagger-fade-in">
           <Pricing />
@@ -186,6 +211,17 @@ function AppContent() {
           </div>
         } />
         
+        {/* Search Results Route */}
+        <Route path="/search" element={
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <div className="flex-grow">
+              <SearchResults />
+            </div>
+            <Footer />
+          </div>
+        } />
+        
         {/* Auth Routes */}
         <Route path="/login" element={
           <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 zoom-in">
@@ -222,7 +258,10 @@ function AppContent() {
             <AdvocateLayout />
           </ProtectedRoute>
         }>
-          <Route path="dashboard" element={<Analytics />} />
+          <Route path="dashboard" element={<AnalyticsDashboard />} />
+          {/* explicit analytics path (also allow /advocate/analytics) */}
+          <Route path="analytics" element={<AnalyticsDashboard />} />
+          <Route path="cases" element={<Cases />} />
           <Route path="clients" element={<Clients />} />
           <Route path="contractcomparison" element={<ContractComparison />} />
           <Route path="documents" element={<Documents />} />
@@ -245,10 +284,18 @@ function AppContent() {
           <Route path="courses" element={<Courses />} />
           <Route path="assignments" element={<Assignments />} />
           <Route path="library" element={<Library />} />
-          <Route path="moot-court" element={<MootCourt />} />
-          <Route path="study-groups" element={<StudentDashboard />} />
-          <Route path="progress" element={<StudentDashboard />} />
-          <Route path="settings" element={<StudentDashboard />} />
+          <Route path="mootcourt" element={<MootCourt />} />
+          <Route path="calendar" element={<Calendar />} />
+          <Route path="career" element={<Career />} />
+          <Route path="content-feed" element={<ContentFeed />} />
+          <Route path="examprep" element={<ExamPrep />} />
+          <Route path="research" element={<StudentResearch />} />
+          <Route path="simulation" element={<StudentSimulation />} />
+          <Route path="notifications" element={<StudentNotifications />} />
+          <Route path="all-features" element={<StudentAllFeatures />} />
+          <Route path="profile" element={<StudentProfile />} />
+          <Route path="settings" element={<StudentSettings />} />
+          <Route path="help" element={<StudentHelp />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
 
@@ -263,12 +310,36 @@ function AppContent() {
           <Route path="dashboard" element={<ClerkDashboard />} />
           <Route path="cases" element={<CaseList />} />
           <Route path="case/:id" element={<CaseDetails />} />
-          <Route path="fake-case-checker" element={<FakeCaseChecker />} />
+          <Route path="calendar" element={<ClerkCalendar />} />
+          <Route path="documents" element={<ClerkDocuments />} />
           <Route path="sms-log" element={<SmsLog />} />
           <Route path="quick-actions" element={<QuickActions />} />
-          <Route path="offline-mode" element={<OfflineModeToggle />} />
+          {/* FakeCaseChecker removed */}
+          <Route path="reports" element={<ClerkReports />} />
           <Route path="integrations" element={<ClerkIntegrations />} />
           <Route path="settings" element={<ClerkSettings />} />
+          <Route path="help" element={<ClerkHelp />} />
+          <Route path="offline-mode" element={<OfflineModeToggle />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+        </Route>
+
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={
+          <ProtectedRoute>
+            <div className="fade-in">
+              <AdminLayout />
+            </div>
+          </ProtectedRoute>
+        }>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="payments" element={<AdminPayments />} />
+          <Route path="content" element={<AdminContent />} />
+          <Route path="courses" element={<AdminCourses />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="reports" element={<AdminReports />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
         

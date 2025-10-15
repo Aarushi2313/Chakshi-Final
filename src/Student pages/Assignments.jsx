@@ -15,22 +15,46 @@ import {
   FiBookOpen,
   FiTrendingUp,
   FiTarget,
-  FiMoreVertical
+  FiMoreVertical,
+  FiArchive,
+  FiVideo,
+  FiFileText,
+  FiMic,
+  FiAward
 } from 'react-icons/fi';
 
-// Professional color palette
+// Legal-themed color palette based on Hero.js
 const colors = {
-  primary: '#2563eb',
-  secondary: '#64748b',
-  success: '#16a34a',
-  warning: '#d97706',
-  error: '#dc2626',
-  background: '#ffffff',
-  border: '#e5e7eb',
+  // Primary Brand Colors
+  background: '#f5f5ef', // Light cream background
   text: {
-    primary: '#374151',
-    secondary: '#6b7280',
-    tertiary: '#9ca3af'
+    primary: '#1f2839', // Dark navy text
+    secondary: '#6b7280', // Medium gray
+    accent: '#b69d74' // Golden brown accent
+  },
+  
+  // Functional Status Colors
+  success: '#10b981', // Green
+  warning: '#f59e0b', // Amber/Orange
+  info: '#3b82f6', // Blue
+  processing: '#b69d74', // Golden brown
+  
+  // Transparency & Alpha Variations
+  overlay: {
+    light: 'rgba(255, 255, 255, 0.06)',
+    medium: 'rgba(255, 255, 255, 0.08)',
+    golden: {
+      light: 'rgba(182, 157, 116, 0.08)',
+      medium: 'rgba(182, 157, 116, 0.12)',
+      dark: 'rgba(182, 157, 116, 0.15)'
+    }
+  },
+  
+  // Border Colors
+  border: {
+    light: 'rgba(182, 157, 116, 0.40)',
+    medium: 'rgba(182, 157, 116, 0.50)',
+    navy: 'rgba(31, 40, 57, 0.15)'
   }
 };
 
@@ -50,6 +74,10 @@ const Assignments = () => {
       tags: ['constitutional-law', 'civil-rights'],
       estimatedTime: '8 hours',
       isStarred: true,
+      assignmentType: 'case-analysis',
+      bloomLevel: 'analysis',
+      submissionType: 'document',
+      aiFeedback: true
     },
     {
       id: 2,
@@ -65,10 +93,14 @@ const Assignments = () => {
       tags: ['contract-law', 'research'],
       estimatedTime: '12 hours',
       isStarred: false,
+      assignmentType: 'comparative-research',
+      bloomLevel: 'synthesis',
+      submissionType: 'document',
+      aiFeedback: true
     },
     {
       id: 3,
-      title: 'Mock Trial Preparation',
+      title: 'Mock Trial Preparation - Oral Arguments',
       course: 'Trial Advocacy',
       professor: 'Judge Rebecca Smith',
       dueDate: '2025-10-05T14:00:00',
@@ -80,7 +112,11 @@ const Assignments = () => {
       tags: ['trial-advocacy', 'mock-trial'],
       estimatedTime: '15 hours',
       isStarred: true,
-      grade: 'A+'
+      assignmentType: 'video-submission',
+      bloomLevel: 'evaluation',
+      submissionType: 'video',
+      grade: 'A+',
+      aiFeedback: true
     },
     {
       id: 4,
@@ -96,6 +132,28 @@ const Assignments = () => {
       tags: ['criminal-law', 'quiz'],
       estimatedTime: '2 hours',
       isStarred: false,
+      assignmentType: 'knowledge-check',
+      bloomLevel: 'knowledge',
+      submissionType: 'quiz'
+    },
+    {
+      id: 5,
+      title: 'Drafting Exercise: Writ Petition',
+      course: 'Civil Procedure',
+      professor: 'Prof. Emily Rodriguez',
+      dueDate: '2025-10-10T23:59:00',
+      status: 'draft',
+      priority: 'medium',
+      progress: 30,
+      points: 120,
+      description: 'Draft a writ petition using provided case materials and templates.',
+      tags: ['civil-procedure', 'drafting'],
+      estimatedTime: '6 hours',
+      isStarred: false,
+      assignmentType: 'drafting-exercise',
+      bloomLevel: 'application',
+      submissionType: 'document',
+      aiFeedback: true
     }
   ]);
 
@@ -103,28 +161,57 @@ const Assignments = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
+  const [assignmentTypeFilter, setAssignmentTypeFilter] = useState('all');
+  const [bloomLevelFilter, setBloomLevelFilter] = useState('all');
   const [sortBy, setSortBy] = useState('dueDate');
   const [sortOrder, setSortOrder] = useState('asc');
   const [viewMode, setViewMode] = useState('table');
   const [selectedAssignments, setSelectedAssignments] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState('active'); // active, completed, drafts
 
-  // Get unique courses
+  // Get unique courses and assignment types
   const courses = useMemo(() => {
     return [...new Set(assignments.map(a => a.course))];
   }, [assignments]);
 
+  const assignmentTypes = useMemo(() => {
+    return [...new Set(assignments.map(a => a.assignmentType))];
+  }, [assignments]);
+
+  const bloomLevels = [
+    'knowledge', 'comprehension', 'application', 'analysis', 'synthesis', 'evaluation'
+  ];
+
+  // Filter assignments based on active tab
+  const getTabAssignments = useCallback(() => {
+    switch (activeTab) {
+      case 'active':
+        return assignments.filter(a => a.status !== 'completed' && a.status !== 'draft');
+      case 'completed':
+        return assignments.filter(a => a.status === 'completed');
+      case 'drafts':
+        return assignments.filter(a => a.status === 'draft');
+      default:
+        return assignments;
+    }
+  }, [assignments, activeTab]);
+
   // Filtered and sorted assignments
   const filteredAssignments = useMemo(() => {
-    let filtered = assignments.filter(assignment => {
+    let filtered = getTabAssignments().filter(assignment => {
       const matchesSearch = assignment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           assignment.course.toLowerCase().includes(searchQuery.toLowerCase());
+                           assignment.course.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           assignment.professor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           assignment.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesStatus = statusFilter === 'all' || assignment.status === statusFilter;
       const matchesPriority = priorityFilter === 'all' || assignment.priority === priorityFilter;
       const matchesCourse = courseFilter === 'all' || assignment.course === courseFilter;
+      const matchesType = assignmentTypeFilter === 'all' || assignment.assignmentType === assignmentTypeFilter;
+      const matchesBloom = bloomLevelFilter === 'all' || assignment.bloomLevel === bloomLevelFilter;
 
-      return matchesSearch && matchesStatus && matchesPriority && matchesCourse;
+      return matchesSearch && matchesStatus && matchesPriority && matchesCourse && matchesType && matchesBloom;
     });
 
     // Sort assignments
@@ -149,6 +236,11 @@ const Assignments = () => {
           aValue = a.points;
           bValue = b.points;
           break;
+        case 'bloomLevel':
+          const bloomOrder = { 'knowledge': 1, 'comprehension': 2, 'application': 3, 'analysis': 4, 'synthesis': 5, 'evaluation': 6 };
+          aValue = bloomOrder[a.bloomLevel];
+          bValue = bloomOrder[b.bloomLevel];
+          break;
         default:
           aValue = a.title;
           bValue = b.title;
@@ -162,23 +254,32 @@ const Assignments = () => {
     });
 
     return filtered;
-  }, [assignments, searchQuery, statusFilter, priorityFilter, courseFilter, sortBy, sortOrder]);
+  }, [getTabAssignments, searchQuery, statusFilter, priorityFilter, courseFilter, assignmentTypeFilter, bloomLevelFilter, sortBy, sortOrder]);
 
   // Statistics
   const stats = useMemo(() => {
-    const total = assignments.length;
-    const completed = assignments.filter(a => a.status === 'completed').length;
-    const pending = assignments.filter(a => a.status === 'pending').length;
-    const inProgress = assignments.filter(a => a.status === 'in-progress').length;
+    const activeAssignments = getTabAssignments();
+    const total = activeAssignments.length;
+    const completed = activeAssignments.filter(a => a.status === 'completed').length;
+    const pending = activeAssignments.filter(a => a.status === 'pending').length;
+    const inProgress = activeAssignments.filter(a => a.status === 'in-progress').length;
+    const drafts = activeAssignments.filter(a => a.status === 'draft').length;
     
+    // Calculate average progress
+    const avgProgress = total > 0 
+      ? Math.round(activeAssignments.reduce((sum, a) => sum + a.progress, 0) / total)
+      : 0;
+
     return {
       total,
       completed,
       pending,
       inProgress,
+      drafts,
+      avgProgress,
       completionRate: total > 0 ? Math.round((completed / total) * 100) : 0
     };
-  }, [assignments]);
+  }, [getTabAssignments]);
 
   // Toggle selection
   const toggleAssignmentSelection = useCallback((assignmentId) => {
@@ -190,7 +291,8 @@ const Assignments = () => {
   }, []);
 
   // Toggle star
-  const toggleStar = useCallback((assignmentId) => {
+  const toggleStar = useCallback((assignmentId, e) => {
+    e?.stopPropagation(); // Prevent event bubbling
     setAssignments(prev => prev.map(assignment =>
       assignment.id === assignmentId
         ? { ...assignment, isStarred: !assignment.isStarred }
@@ -198,22 +300,56 @@ const Assignments = () => {
     ));
   }, []);
 
-  // Utility functions
+  // Utility functions with new color palette
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed': return 'text-green-700 bg-green-50 border-green-200';
-      case 'in-progress': return 'text-blue-700 bg-blue-50 border-blue-200';
-      case 'pending': return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-      default: return 'text-gray-700 bg-gray-50 border-gray-200';
+      case 'completed': return { text: colors.success, bg: `${colors.success}20`, border: `${colors.success}30` };
+      case 'in-progress': return { text: colors.processing, bg: `${colors.processing}20`, border: `${colors.processing}30` };
+      case 'pending': return { text: colors.warning, bg: `${colors.warning}20`, border: `${colors.warning}30` };
+      case 'draft': return { text: colors.text.secondary, bg: `${colors.text.secondary}20`, border: `${colors.text.secondary}30` };
+      default: return { text: colors.text.secondary, bg: `${colors.text.secondary}20`, border: `${colors.text.secondary}30` };
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'text-red-700 bg-red-50';
-      case 'medium': return 'text-yellow-700 bg-yellow-50';
-      case 'low': return 'text-green-700 bg-green-50';
-      default: return 'text-gray-700 bg-gray-50';
+      case 'high': return { text: '#dc2626', bg: '#fef2f2', border: '#fecaca' };
+      case 'medium': return { text: colors.warning, bg: `${colors.warning}20`, border: `${colors.warning}30` };
+      case 'low': return { text: colors.success, bg: `${colors.success}20`, border: `${colors.success}30` };
+      default: return { text: colors.text.secondary, bg: `${colors.text.secondary}20`, border: `${colors.text.secondary}30` };
+    }
+  };
+
+  const getBloomLevelColor = (level) => {
+    const bloomColors = {
+      knowledge: colors.info,
+      comprehension: '#8b5cf6',
+      application: colors.success,
+      analysis: colors.warning,
+      synthesis: colors.processing,
+      evaluation: '#ec4899'
+    };
+    return bloomColors[level] || colors.text.secondary;
+  };
+
+  const getAssignmentTypeIcon = (type) => {
+    switch (type) {
+      case 'case-analysis': return FiFileText;
+      case 'comparative-research': return FiTrendingUp;
+      case 'video-submission': return FiVideo;
+      case 'drafting-exercise': return FiEdit3;
+      case 'knowledge-check': return FiAward;
+      default: return FiBookOpen;
+    }
+  };
+
+  const getSubmissionTypeIcon = (type) => {
+    switch (type) {
+      case 'document': return FiFileText;
+      case 'video': return FiVideo;
+      case 'audio': return FiMic;
+      case 'quiz': return FiAward;
+      default: return FiFileText;
     }
   };
 
@@ -223,11 +359,11 @@ const Assignments = () => {
     const diffTime = due - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays < 0) return { text: 'Overdue', color: 'text-red-600' };
-    if (diffDays === 0) return { text: 'Due today', color: 'text-red-600' };
-    if (diffDays === 1) return { text: 'Due tomorrow', color: 'text-orange-600' };
-    if (diffDays <= 7) return { text: `${diffDays} days left`, color: 'text-yellow-600' };
-    return { text: `${diffDays} days left`, color: 'text-gray-600' };
+    if (diffDays < 0) return { text: 'Overdue', color: '#dc2626', urgency: 'high' };
+    if (diffDays === 0) return { text: 'Due today', color: '#dc2626', urgency: 'high' };
+    if (diffDays === 1) return { text: 'Due tomorrow', color: colors.warning, urgency: 'medium' };
+    if (diffDays <= 7) return { text: `${diffDays} days left`, color: colors.warning, urgency: 'medium' };
+    return { text: `${diffDays} days left`, color: colors.success, urgency: 'low' };
   };
 
   const formatDate = (dateString) => {
@@ -239,23 +375,72 @@ const Assignments = () => {
     });
   };
 
+  // Add new assignment
+  const addNewAssignment = useCallback(() => {
+    const newAssignment = {
+      id: Math.max(...assignments.map(a => a.id)) + 1,
+      title: 'New Assignment',
+      course: courses[0] || 'General',
+      professor: 'Professor',
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'pending',
+      priority: 'medium',
+      progress: 0,
+      points: 100,
+      description: 'New assignment description',
+      tags: [],
+      estimatedTime: '2 hours',
+      isStarred: false,
+      assignmentType: 'case-analysis',
+      bloomLevel: 'knowledge',
+      submissionType: 'document',
+      aiFeedback: false
+    };
+    setAssignments(prev => [...prev, newAssignment]);
+  }, [assignments, courses]);
+
+  // AI Assistant Features
+  const aiFeatures = [
+    { name: 'Structure Suggester', icon: FiTarget, description: 'Outlines for legal research papers' },
+    { name: 'Citation Checker', icon: FiFileText, description: 'Bluebook/ILI compliance verification' },
+    { name: 'Plagiarism Scanner', icon: FiSearch, description: 'Integrated originality detection' },
+    { name: 'Argument Strength', icon: FiTrendingUp, description: 'Logical fallacy detection' }
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Assignments</h1>
-              <p className="text-gray-600 mt-1">Manage your academic assignments</p>
+              <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>Legal Assignments Hub</h1>
+              <p className="mt-1" style={{ color: colors.text.secondary }}>
+                Built on Bloom's Taxonomy & Scaffolded Learning Theory
+              </p>
             </div>
             <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-              <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
+              <button 
+                className="px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all duration-200 hover:shadow-md"
+                style={{ 
+                  backgroundColor: colors.overlay.light,
+                  border: `1px solid ${colors.border.navy}`,
+                  color: colors.text.primary
+                }}
+              >
                 <FiDownload className="w-4 h-4" />
                 <span>Export</span>
               </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center space-x-2">
+              <button 
+                onClick={addNewAssignment}
+                className="px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all duration-200 hover:shadow-lg"
+                style={{ 
+                  background: 'linear-gradient(135deg, #b69d74, #b69d74DD, #b69d74BB)',
+                  color: colors.text.primary,
+                  border: 'none'
+                }}
+              >
                 <FiPlus className="w-4 h-4" />
                 <span>New Assignment</span>
               </button>
@@ -263,70 +448,134 @@ const Assignments = () => {
           </div>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <FiBookOpen className="w-5 h-5 text-blue-600" />
-              </div>
-            </div>
+        {/* AI Assistant Panel */}
+        <div 
+          className="rounded-lg p-6 mb-8 backdrop-blur-sm transition-all duration-200"
+          style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            border: `1px solid ${colors.border.light}`,
+            background: 'linear-gradient(135deg, rgba(182, 157, 116, 0.05), rgba(182, 157, 116, 0.02))'
+          }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold" style={{ color: colors.text.primary }}>AI Legal Assistant</h2>
+            <span className="text-sm px-2 py-1 rounded" style={{ backgroundColor: colors.overlay.golden.light, color: colors.text.accent }}>
+              Beta
+            </span>
           </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {aiFeatures.map((feature, index) => (
+              <div 
+                key={index}
+                className="p-3 rounded-lg transition-all duration-200 hover:shadow-md cursor-pointer"
+                style={{ 
+                  backgroundColor: colors.overlay.light,
+                  border: `1px solid ${colors.border.light}`
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className="p-2 rounded-lg"
+                    style={{ backgroundColor: colors.overlay.golden.light }}
+                  >
+                    <feature.icon className="w-4 h-4" style={{ color: colors.text.accent }} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium" style={{ color: colors.text.primary }}>{feature.name}</h3>
+                    <p className="text-xs" style={{ color: colors.text.secondary }}>{feature.description}</p>
+                  </div>
+                </div>
               </div>
-              <div className="p-2 bg-green-50 rounded-lg">
-                <FiCheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">In Progress</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
-              </div>
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <FiClock className="w-5 h-5 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Completion</p>
-                <p className="text-2xl font-bold text-purple-600">{stats.completionRate}%</p>
-              </div>
-              <div className="p-2 bg-purple-50 rounded-lg">
-                <FiTrendingUp className="w-5 h-5 text-purple-600" />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
+        {/* Navigation Tabs */}
+        <div className="mb-6">
+          <div 
+            className="flex space-x-1 rounded-lg p-1"
+            style={{ backgroundColor: colors.overlay.light }}
+          >
+            {[
+              { key: 'active', label: 'Active Assignments', count: stats.total },
+              { key: 'completed', label: 'Completed Archive', count: stats.completed },
+              { key: 'drafts', label: 'Draft Workspace', count: stats.drafts }
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  activeTab === tab.key ? 'shadow-sm' : ''
+                }`}
+                style={{ 
+                  backgroundColor: activeTab === tab.key ? colors.overlay.golden.medium : 'transparent',
+                  color: activeTab === tab.key ? colors.text.primary : colors.text.secondary
+                }}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+          {[
+            { label: 'Total', value: stats.total, icon: FiBookOpen, color: colors.processing },
+            { label: 'Completed', value: stats.completed, icon: FiCheckCircle, color: colors.success },
+            { label: 'In Progress', value: stats.inProgress, icon: FiClock, color: colors.info },
+            { label: 'Pending', value: stats.pending, icon: FiAlertCircle, color: colors.warning },
+            { label: 'Drafts', value: stats.drafts, icon: FiEdit3, color: colors.text.secondary },
+            { label: 'Avg Progress', value: `${stats.avgProgress}%`, icon: FiTrendingUp, color: colors.text.accent }
+          ].map((stat, index) => (
+            <div 
+              key={index}
+              className="rounded-lg p-4 backdrop-blur-sm transition-all duration-200 hover:shadow-md"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: `1px solid ${colors.border.light}`
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm" style={{ color: colors.text.secondary }}>{stat.label}</p>
+                  <p className="text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+                </div>
+                <div 
+                  className="p-2 rounded-lg"
+                  style={{ backgroundColor: colors.overlay.golden.light }}
+                >
+                  <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Search and Controls */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+        <div 
+          className="rounded-lg p-4 mb-6 backdrop-blur-sm transition-all duration-200"
+          style={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            border: `1px solid ${colors.border.light}`
+          }}
+        >
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
             
             {/* Search */}
             <div className="relative flex-1 max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiSearch className="h-4 w-4 text-gray-400" />
+                <FiSearch className="h-4 w-4" style={{ color: colors.text.secondary }} />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search assignments..."
+                className="block w-full pl-10 pr-3 py-2 rounded-lg focus:ring-2 transition-all duration-200"
+                style={{ 
+                  backgroundColor: colors.overlay.light,
+                  border: `1px solid ${colors.border.navy}`,
+                  color: colors.text.primary
+                }}
+                placeholder="Search assignments, courses, tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -336,28 +585,43 @@ const Assignments = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 ${
-                  showFilters ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all duration-200 ${
+                  showFilters ? 'bg-opacity-20' : 'hover:bg-opacity-10'
                 }`}
+                style={{ 
+                  backgroundColor: showFilters ? colors.overlay.golden.medium : 'transparent',
+                  color: colors.text.primary
+                }}
               >
                 <FiFilter className="w-4 h-4" />
                 <span>Filters</span>
               </button>
 
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <div 
+                className="flex items-center rounded-lg p-1"
+                style={{ backgroundColor: colors.overlay.light }}
+              >
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium ${
-                    viewMode === 'table' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                    viewMode === 'table' ? 'shadow-sm' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: viewMode === 'table' ? colors.overlay.golden.medium : 'transparent',
+                    color: colors.text.primary
+                  }}
                 >
                   Table
                 </button>
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`px-3 py-1 rounded-md text-sm font-medium ${
-                    viewMode === 'grid' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                    viewMode === 'grid' ? 'shadow-sm' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: viewMode === 'grid' ? colors.overlay.golden.medium : 'transparent',
+                    color: colors.text.primary
+                  }}
                 >
                   Grid
                 </button>
@@ -365,69 +629,72 @@ const Assignments = () => {
             </div>
           </div>
 
-          {/* Filters */}
+          {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="mt-4 pt-4" style={{ borderTop: `1px solid ${colors.border.light}` }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <option value="all">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
+                {[
+                  { label: 'Status', value: statusFilter, onChange: setStatusFilter, options: ['all', 'pending', 'in-progress', 'completed', 'draft'] },
+                  { label: 'Priority', value: priorityFilter, onChange: setPriorityFilter, options: ['all', 'high', 'medium', 'low'] },
+                  { label: 'Course', value: courseFilter, onChange: setCourseFilter, options: ['all', ...courses] },
+                  { label: 'Type', value: assignmentTypeFilter, onChange: setAssignmentTypeFilter, options: ['all', ...assignmentTypes] },
+                  { label: 'Bloom Level', value: bloomLevelFilter, onChange: setBloomLevelFilter, options: ['all', ...bloomLevels] }
+                ].map((filter, index) => (
+                  <div key={index}>
+                    <label className="block text-sm font-medium mb-1" style={{ color: colors.text.primary }}>
+                      {filter.label}
+                    </label>
+                    <select
+                      className="block w-full rounded-lg px-3 py-2 transition-all duration-200 focus:ring-2"
+                      style={{ 
+                        backgroundColor: colors.overlay.light,
+                        border: `1px solid ${colors.border.navy}`,
+                        color: colors.text.primary
+                      }}
+                      value={filter.value}
+                      onChange={(e) => filter.onChange(e.target.value)}
+                    >
+                      <option value="all">All {filter.label}s</option>
+                      {filter.options.map(option => (
+                        <option key={option} value={option}>
+                          {option.charAt(0).toUpperCase() + option.slice(1).replace('-', ' ')}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                  <select
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={priorityFilter}
-                    onChange={(e) => setPriorityFilter(e.target.value)}
-                  >
-                    <option value="all">All Priorities</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
-                  <select
-                    className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={courseFilter}
-                    onChange={(e) => setCourseFilter(e.target.value)}
-                  >
-                    <option value="all">All Courses</option>
-                    {courses.map(course => (
-                      <option key={course} value={course}>{course}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: colors.text.primary }}>
+                    Sort
+                  </label>
                   <div className="flex space-x-2">
                     <select
-                      className="block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full rounded-lg px-3 py-2 transition-all duration-200 focus:ring-2"
+                      style={{ 
+                        backgroundColor: colors.overlay.light,
+                        border: `1px solid ${colors.border.navy}`,
+                        color: colors.text.primary
+                      }}
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
                     >
                       <option value="dueDate">Due Date</option>
                       <option value="priority">Priority</option>
                       <option value="progress">Progress</option>
+                      <option value="points">Points</option>
+                      <option value="bloomLevel">Bloom Level</option>
                       <option value="title">Title</option>
                     </select>
                     <button
                       onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                      className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md"
+                      style={{ 
+                        backgroundColor: colors.overlay.light,
+                        border: `1px solid ${colors.border.navy}`,
+                        color: colors.text.primary
+                      }}
                     >
                       {sortOrder === 'asc' ? '↑' : '↓'}
                     </button>
@@ -440,105 +707,195 @@ const Assignments = () => {
 
         {/* Assignments Table */}
         {viewMode === 'table' ? (
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div 
+            className="rounded-lg overflow-hidden backdrop-blur-sm transition-all duration-200"
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: `1px solid ${colors.border.light}`
+            }}
+          >
             {/* Table Header */}
-            <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-              <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
+            <div 
+              className="px-4 py-3 border-b"
+              style={{ 
+                backgroundColor: colors.overlay.light,
+                borderColor: colors.border.light
+              }}
+            >
+              <div className="grid grid-cols-12 gap-4 text-sm font-medium" style={{ color: colors.text.primary }}>
                 <div className="col-span-1">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded transition-all duration-200 focus:ring-2"
+                    style={{ 
+                      borderColor: colors.border.navy,
+                      backgroundColor: colors.overlay.light
+                    }}
                     onChange={(e) => {
                       setSelectedAssignments(e.target.checked ? filteredAssignments.map(a => a.id) : []);
                     }}
                   />
                 </div>
-                <div className="col-span-5">Assignment</div>
+                <div className="col-span-4">Assignment</div>
+                <div className="col-span-2 hidden lg:block">Bloom Level</div>
                 <div className="col-span-2 hidden md:block">Due Date</div>
                 <div className="col-span-2">Status</div>
-                <div className="col-span-2 text-right">Actions</div>
+                <div className="col-span-1 text-right">Actions</div>
               </div>
             </div>
 
             {/* Table Body */}
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y" style={{ borderColor: colors.border.light }}>
               {filteredAssignments.map(assignment => {
                 const timeUntilDue = getTimeUntilDue(assignment.dueDate);
+                const statusColors = getStatusColor(assignment.status);
+                const priorityColors = getPriorityColor(assignment.priority);
+                const AssignmentTypeIcon = getAssignmentTypeIcon(assignment.assignmentType);
+                const SubmissionTypeIcon = getSubmissionTypeIcon(assignment.submissionType);
                 
                 return (
-                  <div key={assignment.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <div 
+                    key={assignment.id} 
+                    className="px-4 py-3 transition-all duration-200 hover:shadow-inner"
+                    style={{ 
+                      backgroundColor: selectedAssignments.includes(assignment.id) ? colors.overlay.golden.light : 'transparent'
+                    }}
+                  >
                     <div className="grid grid-cols-12 gap-4 items-center">
                       
                       {/* Checkbox */}
                       <div className="col-span-1">
                         <input
                           type="checkbox"
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded transition-all duration-200 focus:ring-2"
+                          style={{ 
+                            borderColor: colors.border.navy,
+                            backgroundColor: colors.overlay.light
+                          }}
                           checked={selectedAssignments.includes(assignment.id)}
                           onChange={() => toggleAssignmentSelection(assignment.id)}
                         />
                       </div>
 
                       {/* Assignment Details */}
-                      <div className="col-span-5">
+                      <div className="col-span-4">
                         <div className="flex items-start space-x-3">
-                          <button
-                            onClick={() => toggleStar(assignment.id)}
-                            className="mt-0.5 text-gray-400 hover:text-yellow-500"
-                          >
-                            <FiStar className={`w-4 h-4 ${assignment.isStarred ? 'text-yellow-500 fill-current' : ''}`} />
-                          </button>
-                          <div className="min-w-0">
-                            <h3 className="text-sm font-medium text-gray-900 truncate">
+                          <div className="flex flex-col space-y-1">
+                            <button
+                              onClick={(e) => toggleStar(assignment.id, e)}
+                              className="transition-all duration-200 hover:scale-110"
+                              style={{ color: assignment.isStarred ? colors.text.accent : colors.text.secondary }}
+                            >
+                              <FiStar className={`w-4 h-4 ${assignment.isStarred ? 'fill-current' : ''}`} />
+                            </button>
+                            <div 
+                              className="p-1 rounded"
+                              style={{ backgroundColor: colors.overlay.golden.light }}
+                            >
+                              <AssignmentTypeIcon className="w-3 h-3" style={{ color: colors.text.accent }} />
+                            </div>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-sm font-medium truncate" style={{ color: colors.text.primary }}>
                               {assignment.title}
                             </h3>
-                            <p className="text-sm text-gray-600 truncate">
+                            <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
                               {assignment.course} • {assignment.professor}
                             </p>
                             <div className="flex items-center space-x-2 mt-1">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityColor(assignment.priority)}`}>
+                              <span 
+                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border"
+                                style={{ 
+                                  color: priorityColors.text,
+                                  backgroundColor: priorityColors.bg,
+                                  borderColor: priorityColors.border
+                                }}
+                              >
                                 {assignment.priority}
                               </span>
-                              <span className="text-xs text-gray-500">{assignment.points} pts</span>
+                              <span className="text-xs flex items-center space-x-1" style={{ color: colors.text.secondary }}>
+                                <SubmissionTypeIcon className="w-3 h-3" />
+                                <span>{assignment.points} pts</span>
+                              </span>
+                              {assignment.aiFeedback && (
+                                <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: colors.overlay.golden.light, color: colors.text.accent }}>
+                                  AI
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
 
+                      {/* Bloom Level */}
+                      <div className="col-span-2 hidden lg:block">
+                        <div className="flex items-center space-x-2">
+                          <div 
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: getBloomLevelColor(assignment.bloomLevel) }}
+                          ></div>
+                          <span className="text-sm capitalize" style={{ color: colors.text.primary }}>
+                            {assignment.bloomLevel}
+                          </span>
+                        </div>
+                      </div>
+
                       {/* Due Date */}
                       <div className="col-span-2 hidden md:block">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm" style={{ color: colors.text.primary }}>
                           {formatDate(assignment.dueDate)}
                         </div>
-                        <div className={`text-xs ${timeUntilDue.color}`}>
+                        <div className={`text-xs`} style={{ color: timeUntilDue.color }}>
                           {timeUntilDue.text}
                         </div>
                       </div>
 
                       {/* Status and Progress */}
                       <div className="col-span-2">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(assignment.status)}`}>
+                        <span 
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
+                          style={{ 
+                            color: statusColors.text,
+                            backgroundColor: statusColors.bg,
+                            borderColor: statusColors.border
+                          }}
+                        >
                           {assignment.status.replace('-', ' ')}
                         </span>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                        <div className="w-full rounded-full h-1.5 mt-1" style={{ backgroundColor: colors.overlay.light }}>
                           <div
-                            className="bg-blue-600 h-1.5 rounded-full"
-                            style={{ width: `${assignment.progress}%` }}
+                            className="h-1.5 rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${assignment.progress}%`,
+                              background: 'linear-gradient(90deg, #b69d74, #b69d74CC)'
+                            }}
                           ></div>
                         </div>
-                        <div className="text-xs text-gray-600 mt-0.5">{assignment.progress}%</div>
+                        <div className="text-xs mt-0.5" style={{ color: colors.text.secondary }}>{assignment.progress}%</div>
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-2">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button className="p-1 text-gray-400 hover:text-blue-600">
+                      <div className="col-span-1">
+                        <div className="flex items-center justify-end space-x-1">
+                          <button 
+                            className="p-1 transition-all duration-200 hover:scale-110"
+                            style={{ color: colors.text.secondary }}
+                            title="View assignment"
+                          >
                             <FiEye className="w-4 h-4" />
                           </button>
-                          <button className="p-1 text-gray-400 hover:text-green-600">
+                          <button 
+                            className="p-1 transition-all duration-200 hover:scale-110"
+                            style={{ color: colors.text.secondary }}
+                            title="Edit assignment"
+                          >
                             <FiEdit3 className="w-4 h-4" />
                           </button>
-                          <button className="p-1 text-gray-400 hover:text-gray-600">
+                          <button 
+                            className="p-1 transition-all duration-200 hover:scale-110"
+                            style={{ color: colors.text.secondary }}
+                            title="More options"
+                          >
                             <FiMoreVertical className="w-4 h-4" />
                           </button>
                         </div>
@@ -552,9 +909,13 @@ const Assignments = () => {
             {/* Empty State */}
             {filteredAssignments.length === 0 && (
               <div className="text-center py-12">
-                <FiBookOpen className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No assignments found</h3>
-                <p className="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+                <FiBookOpen className="mx-auto h-12 w-12" style={{ color: colors.text.secondary }} />
+                <h3 className="mt-2 text-sm font-medium" style={{ color: colors.text.primary }}>No assignments found</h3>
+                <p className="mt-1 text-sm" style={{ color: colors.text.secondary }}>
+                  {activeTab === 'active' ? 'No active assignments match your criteria.' :
+                   activeTab === 'completed' ? 'No completed assignments found.' :
+                   'No draft assignments in your workspace.'}
+                </p>
               </div>
             )}
           </div>
@@ -563,52 +924,111 @@ const Assignments = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAssignments.map(assignment => {
               const timeUntilDue = getTimeUntilDue(assignment.dueDate);
+              const statusColors = getStatusColor(assignment.status);
+              const priorityColors = getPriorityColor(assignment.priority);
+              const AssignmentTypeIcon = getAssignmentTypeIcon(assignment.assignmentType);
+              const SubmissionTypeIcon = getSubmissionTypeIcon(assignment.submissionType);
               
               return (
-                <div key={assignment.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div 
+                  key={assignment.id} 
+                  className="rounded-lg p-4 transition-all duration-200 hover:shadow-lg backdrop-blur-sm"
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                    border: `1px solid ${colors.border.light}`
+                  }}
+                >
                   
                   {/* Header */}
                   <div className="flex items-start justify-between mb-3">
-                    <button
-                      onClick={() => toggleStar(assignment.id)}
-                      className="text-gray-400 hover:text-yellow-500"
-                    >
-                      <FiStar className={`w-4 h-4 ${assignment.isStarred ? 'text-yellow-500 fill-current' : ''}`} />
-                    </button>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getPriorityColor(assignment.priority)}`}>
-                      {assignment.priority}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={(e) => toggleStar(assignment.id, e)}
+                        className="transition-all duration-200 hover:scale-110"
+                        style={{ color: assignment.isStarred ? colors.text.accent : colors.text.secondary }}
+                      >
+                        <FiStar className={`w-4 h-4 ${assignment.isStarred ? 'fill-current' : ''}`} />
+                      </button>
+                      <div 
+                        className="p-1.5 rounded-lg"
+                        style={{ backgroundColor: colors.overlay.golden.light }}
+                      >
+                        <AssignmentTypeIcon className="w-3 h-3" style={{ color: colors.text.accent }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span 
+                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border"
+                        style={{ 
+                          color: priorityColors.text,
+                          backgroundColor: priorityColors.bg,
+                          borderColor: priorityColors.border
+                        }}
+                      >
+                        {assignment.priority}
+                      </span>
+                      {assignment.aiFeedback && (
+                        <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: colors.overlay.golden.light, color: colors.text.accent }}>
+                          AI
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Content */}
-                  <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{assignment.title}</h3>
-                  <p className="text-sm text-gray-600 mb-3">{assignment.course}</p>
+                  <h3 className="font-medium mb-2 line-clamp-2" style={{ color: colors.text.primary }}>{assignment.title}</h3>
+                  <p className="text-sm mb-3" style={{ color: colors.text.secondary }}>{assignment.course}</p>
+                  
+                  {/* Bloom Level */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div 
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: getBloomLevelColor(assignment.bloomLevel) }}
+                    ></div>
+                    <span className="text-xs capitalize" style={{ color: colors.text.secondary }}>
+                      {assignment.bloomLevel}
+                    </span>
+                  </div>
                   
                   {/* Progress */}
                   <div className="mb-3">
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-medium">{assignment.progress}%</span>
+                      <span style={{ color: colors.text.secondary }}>Progress</span>
+                      <span className="font-medium" style={{ color: colors.text.primary }}>{assignment.progress}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div className="w-full rounded-full h-1.5" style={{ backgroundColor: colors.overlay.light }}>
                       <div
-                        className="bg-blue-600 h-1.5 rounded-full"
-                        style={{ width: `${assignment.progress}%` }}
+                        className="h-1.5 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${assignment.progress}%`,
+                          background: 'linear-gradient(90deg, #b69d74, #b69d74CC)'
+                        }}
                       ></div>
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${colors.border.light}` }}>
                     <div>
-                      <div className="text-xs text-gray-900">{formatDate(assignment.dueDate)}</div>
-                      <div className={`text-xs ${timeUntilDue.color}`}>{timeUntilDue.text}</div>
+                      <div className="text-xs flex items-center space-x-1" style={{ color: colors.text.primary }}>
+                        <SubmissionTypeIcon className="w-3 h-3" />
+                        <span>{formatDate(assignment.dueDate)}</span>
+                      </div>
+                      <div className={`text-xs`} style={{ color: timeUntilDue.color }}>{timeUntilDue.text}</div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button className="p-1 text-gray-400 hover:text-blue-600">
+                    <div className="flex items-center space-x-1">
+                      <button 
+                        className="p-1 transition-all duration-200 hover:scale-110"
+                        style={{ color: colors.text.secondary }}
+                        title="View assignment"
+                      >
                         <FiEye className="w-4 h-4" />
                       </button>
-                      <button className="p-1 text-gray-400 hover:text-green-600">
+                      <button 
+                        className="p-1 transition-all duration-200 hover:scale-110"
+                        style={{ color: colors.text.secondary }}
+                        title="Edit assignment"
+                      >
                         <FiEdit3 className="w-4 h-4" />
                       </button>
                     </div>
@@ -620,9 +1040,13 @@ const Assignments = () => {
             {/* Empty State */}
             {filteredAssignments.length === 0 && (
               <div className="col-span-full text-center py-12">
-                <FiBookOpen className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No assignments found</h3>
-                <p className="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+                <FiBookOpen className="mx-auto h-12 w-12" style={{ color: colors.text.secondary }} />
+                <h3 className="mt-2 text-sm font-medium" style={{ color: colors.text.primary }}>No assignments found</h3>
+                <p className="mt-1 text-sm" style={{ color: colors.text.secondary }}>
+                  {activeTab === 'active' ? 'No active assignments match your criteria.' :
+                   activeTab === 'completed' ? 'No completed assignments found.' :
+                   'No draft assignments in your workspace.'}
+                </p>
               </div>
             )}
           </div>
@@ -630,21 +1054,46 @@ const Assignments = () => {
 
         {/* Bulk Actions */}
         {selectedAssignments.length > 0 && (
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 px-4 py-3">
+          <div 
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 rounded-lg shadow-lg px-4 py-3 backdrop-blur-sm transition-all duration-200"
+            style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              border: `1px solid ${colors.border.medium}`,
+              boxShadow: '0 0 25px #b69d7450'
+            }}
+          >
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium" style={{ color: colors.text.primary }}>
                 {selectedAssignments.length} selected
               </span>
               <div className="flex items-center space-x-2">
-                <button className="px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded">
-                  Archive
+                <button 
+                  className="px-3 py-1 text-sm rounded transition-all duration-200 hover:shadow-md flex items-center space-x-1"
+                  style={{ 
+                    color: colors.text.primary,
+                    backgroundColor: colors.overlay.light
+                  }}
+                >
+                  <FiArchive className="w-3 h-3" />
+                  <span>Archive</span>
                 </button>
-                <button className="px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded">
-                  Export
+                <button 
+                  className="px-3 py-1 text-sm rounded transition-all duration-200 hover:shadow-md flex items-center space-x-1"
+                  style={{ 
+                    color: colors.text.primary,
+                    backgroundColor: colors.overlay.light
+                  }}
+                >
+                  <FiDownload className="w-3 h-3" />
+                  <span>Export</span>
                 </button>
                 <button
                   onClick={() => setSelectedAssignments([])}
-                  className="px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                  className="px-3 py-1 text-sm rounded transition-all duration-200 hover:shadow-md"
+                  style={{ 
+                    color: colors.text.primary,
+                    backgroundColor: colors.overlay.light
+                  }}
                 >
                   Clear
                 </button>
