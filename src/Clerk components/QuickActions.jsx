@@ -14,6 +14,7 @@ const QuickActions = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [hoveredAction, setHoveredAction] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Professional Icons Component
   const Icon = ({ name, className = "h-5 w-5" }) => {

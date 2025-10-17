@@ -104,7 +104,7 @@ const Reports = () => {
             <p className="text-sm text-slate-600 dark:text-slate-400">Choose the period for report generation</p>
           </div>
           <div className="flex items-center space-x-3">
-            {['7d', '30d', '90d', '1y', 'custom'].map((range) => (
+            {['7d', '30d', '1y', 'custom'].map((range) => (
               <button
                 key={range}
                 onClick={() => setDateRange(range)}
@@ -114,7 +114,7 @@ const Reports = () => {
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }`}
               >
-                {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : range === '1y' ? '1 Year' : 'Custom'}
+                {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '1y' ? '1 Year' : 'Custom'}
               </button>
             ))}
           </div>

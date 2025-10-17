@@ -33,13 +33,10 @@ import StudentDashboard from "./Student pages/Dashboard";
 import Courses from "./Student pages/Courses";
 import Assignments from "./Student pages/Assignments";
 import Library from "./Student pages/Library";
-import MootCourt from "./Student pages/MootCourt";
 import Calendar from "./Student pages/Calendar";
 import Career from "./Student pages/Career-simple";
-import ContentFeed from "./Student pages/ContentFeed-simple";
 import ExamPrep from "./Student pages/ExamPrep";
 import StudentResearch from "./Student pages/Research";
-import StudentSimulation from "./Student pages/Simulation";
 import StudentNotifications from "./Student pages/Notifications";
 import StudentAllFeatures from "./Student pages/AllFeatures";
 import StudentProfile from "./Student pages/Profile";
@@ -284,13 +281,10 @@ function AppContent() {
           <Route path="courses" element={<Courses />} />
           <Route path="assignments" element={<Assignments />} />
           <Route path="library" element={<Library />} />
-          <Route path="mootcourt" element={<MootCourt />} />
           <Route path="calendar" element={<Calendar />} />
           <Route path="career" element={<Career />} />
-          <Route path="content-feed" element={<ContentFeed />} />
           <Route path="examprep" element={<ExamPrep />} />
           <Route path="research" element={<StudentResearch />} />
-          <Route path="simulation" element={<StudentSimulation />} />
           <Route path="notifications" element={<StudentNotifications />} />
           <Route path="all-features" element={<StudentAllFeatures />} />
           <Route path="profile" element={<StudentProfile />} />
