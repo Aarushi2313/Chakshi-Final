@@ -1,36 +1,69 @@
-{
-  "name": "chakshi",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.0.1",
-    "@fortawesome/free-solid-svg-icons": "^7.0.1",
-    "@fortawesome/react-fontawesome": "^3.0.2",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^16.0.1",
-    "@testing-library/user-event": "^14.5.2",
-    "axios": "^1.12.2",
-    "chart.js": "^4.5.0",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
-    "express-validator": "^7.2.1",
-    "helmet": "^8.1.0",
-    "lucide-react": "^0.542.0",
-    "morgan": "^1.10.1",
-    "razorpay": "^2.9.6",
-    "react": "^18.3.1",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.3.1",
-    "react-error-boundary": "^6.0.0",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^7.8.2",
-    "react-scripts": "^5.0.1",
-    "recharts": "^3.2.1",
-    "web-vitals": "^3.5.2"
-  },
+{{
+
+  "name": "chakshi-monorepo",  "name": "chakshi",
+
+  "version": "1.0.0",  "version": "0.1.0",
+
+  "description": "Chakshi Legal Management System - Monorepo",  "private": true,
+
+  "private": true,  "dependencies": {
+
+  "scripts": {    "@fortawesome/fontawesome-svg-core": "^7.0.1",
+
+    "frontend": "cd frontend && npm start",    "@fortawesome/free-solid-svg-icons": "^7.0.1",
+
+    "frontend:build": "cd frontend && npm run build",    "@fortawesome/react-fontawesome": "^3.0.2",
+
+    "frontend:test": "cd frontend && npm test",    "@testing-library/jest-dom": "^6.4.2",
+
+    "backend:lawagent": "cd backend/lawagent-ts && npm run dev",    "@testing-library/react": "^16.0.1",
+
+    "backend:payment": "cd backend/node-payment && node index.js",    "@testing-library/user-event": "^14.5.2",
+
+    "backend:server": "cd backend/server && node index.js",    "axios": "^1.12.2",
+
+    "install:frontend": "cd frontend && npm install",    "chart.js": "^4.5.0",
+
+    "install:backend:lawagent": "cd backend/lawagent-ts && npm install",    "cors": "^2.8.5",
+
+    "install:backend:payment": "cd backend/node-payment && npm install",    "crypto": "^1.0.1",
+
+    "install:backend:server": "cd backend/server && npm install",    "dotenv": "^17.2.3",
+
+    "install:all": "npm run install:frontend && npm run install:backend:lawagent && npm run install:backend:payment && npm run install:backend:server",    "express": "^5.1.0",
+
+    "dev": "echo Run 'npm run frontend' and 'npm run backend:server' in separate terminals"    "express-rate-limit": "^8.1.0",
+
+  },    "express-validator": "^7.2.1",
+
+  "repository": {    "helmet": "^8.1.0",
+
+    "type": "git",    "lucide-react": "^0.542.0",
+
+    "url": "git+https://github.com/Aarushi2313/Chakshi-Final.git"    "morgan": "^1.10.1",
+
+  },    "razorpay": "^2.9.6",
+
+  "keywords": [    "react": "^18.3.1",
+
+    "legal",    "react-chartjs-2": "^5.3.0",
+
+    "management",    "react-dom": "^18.3.1",
+
+    "react",    "react-error-boundary": "^6.0.0",
+
+    "express",    "react-icons": "^5.5.0",
+
+    "typescript"    "react-router-dom": "^7.8.2",
+
+  ],    "react-scripts": "^5.0.1",
+
+  "author": "",    "recharts": "^3.2.1",
+
+  "license": "ISC"    "web-vitals": "^3.5.2"
+
+}  },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "CI=false react-scripts build",
