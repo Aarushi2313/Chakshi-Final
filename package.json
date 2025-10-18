@@ -1,102 +1,84 @@
-{{
-
-  "name": "chakshi-monorepo",  "name": "chakshi",
-
-  "version": "1.0.0",  "version": "0.1.0",
-
-  "description": "Chakshi Legal Management System - Monorepo",  "private": true,
-
-  "private": true,  "dependencies": {
-
-  "scripts": {    "@fortawesome/fontawesome-svg-core": "^7.0.1",
-
-    "frontend": "cd frontend && npm start",    "@fortawesome/free-solid-svg-icons": "^7.0.1",
-
-    "frontend:build": "cd frontend && npm run build",    "@fortawesome/react-fontawesome": "^3.0.2",
-
-    "frontend:test": "cd frontend && npm test",    "@testing-library/jest-dom": "^6.4.2",
-
-    "backend:lawagent": "cd backend/lawagent-ts && npm run dev",    "@testing-library/react": "^16.0.1",
-
-    "backend:payment": "cd backend/node-payment && node index.js",    "@testing-library/user-event": "^14.5.2",
-
-    "backend:server": "cd backend/server && node index.js",    "axios": "^1.12.2",
-
-    "install:frontend": "cd frontend && npm install",    "chart.js": "^4.5.0",
-
-    "install:backend:lawagent": "cd backend/lawagent-ts && npm install",    "cors": "^2.8.5",
-
-    "install:backend:payment": "cd backend/node-payment && npm install",    "crypto": "^1.0.1",
-
-    "install:backend:server": "cd backend/server && npm install",    "dotenv": "^17.2.3",
-
-    "install:all": "npm run install:frontend && npm run install:backend:lawagent && npm run install:backend:payment && npm run install:backend:server",    "express": "^5.1.0",
-
-    "dev": "echo Run 'npm run frontend' and 'npm run backend:server' in separate terminals"    "express-rate-limit": "^8.1.0",
-
-  },    "express-validator": "^7.2.1",
-
-  "repository": {    "helmet": "^8.1.0",
-
-    "type": "git",    "lucide-react": "^0.542.0",
-
-    "url": "git+https://github.com/Aarushi2313/Chakshi-Final.git"    "morgan": "^1.10.1",
-
-  },    "razorpay": "^2.9.6",
-
-  "keywords": [    "react": "^18.3.1",
-
-    "legal",    "react-chartjs-2": "^5.3.0",
-
-    "management",    "react-dom": "^18.3.1",
-
-    "react",    "react-error-boundary": "^6.0.0",
-
-    "express",    "react-icons": "^5.5.0",
-
-    "typescript"    "react-router-dom": "^7.8.2",
-
-  ],    "react-scripts": "^5.0.1",
-
-  "author": "",    "recharts": "^3.2.1",
-
-  "license": "ISC"    "web-vitals": "^3.5.2"
-
-}  },
-
+{
+  "name": "chakshi-backend",
+  "version": "1.0.0",
+  "description": "Node.js + TypeScript backend starter for Chakshi with Supabase and Razorpay integration",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "node server/index.js",
-    "server:dev": "nodemon server/index.js",
-    "dev": "concurrently \"npm run server:dev\" \"npm start\"",
-    "dev:server-only": "npm run server:dev"
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose up --build"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "engines": {
-    "node": "22.x"
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.57.4",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "razorpay": "^2.9.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "nodemon": "^3.1.10"
-  }
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^1.4.13",
+    "@types/node": "^20.19.17",
+    "@types/supertest": "^2.0.16",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "prisma": "^5.22.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.4.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "express",
+    "supabase",
+    "prisma",
+    "razorpay",
+    "jwt",
+    "api"
+  ],
+  "author": "Chakshi Team",
+  "license": "MIT"
 }
