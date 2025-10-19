@@ -1,0 +1,3 @@
+[submodule "lawAgent"]
+	path = lawAgent
+	url = https://github.com/A1Kumari/lawAgent.git
