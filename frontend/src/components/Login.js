@@ -5,14 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: ''
+    password: ''
   });
   const [error, setError] = useState('');
-  const [roleError, setRoleError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [hoveredRole, setHoveredRole] = useState(null);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -90,44 +87,13 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
-    if (e.target.name === 'role') {
-      setRoleError('');
-    }
     setError('');
-  };
-
-  // Demo authentication - replace with actual API call
-  const authenticateUser = async (credentials) => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, allow any email/password combination
-    // In production, this should make a real API call
-    if (credentials.email && credentials.password && credentials.role) {
-      return {
-        id: Date.now(),
-        email: credentials.email,
-        role: credentials.role,
-        name: credentials.email.split('@')[0],
-        token: `demo-token-${Date.now()}`,
-        isAuthenticated: true
-      };
-    } else {
-      throw new Error('Invalid credentials');
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setRoleError('');
     setLoading(true);
-    
-    if (!formData.role) {
-      setRoleError('Please select your role');
-      setLoading(false);
-      return;
-    }
 
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
@@ -136,15 +102,30 @@ const Login = () => {
     }
 
     try {
-      // Authenticate user (replace with actual API call)
-      const userData = await authenticateUser(formData);
+      // Authenticate with Supabase and backend
+      const { data: userData, error: loginError } = await login(
+        formData.email,
+        formData.password
+      );
+
+      if (loginError) {
+        throw new Error(loginError);
+      }
+
+      if (!userData) {
+        throw new Error('Login failed. No user data received.');
+      }
+
+      // Get the route based on user's role from backend
+      const userRole = userData.role.toLowerCase();
+      const selectedRole = roles.find(role => role.id === userRole);
       
-      // Store user data in context and localStorage
-      login(userData);
-      
-      // Get the selected role's route
-      const selectedRole = roles.find(role => role.id === formData.role);
-      navigate(selectedRole.route);
+      if (selectedRole) {
+        navigate(selectedRole.route);
+      } else {
+        // Default fallback based on role
+        navigate(`/${userRole}/dashboard`);
+      }
       
     } catch (err) {
       console.error('Login failed:', err);
@@ -311,92 +292,6 @@ const Login = () => {
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
-            </div>
-
-            {/* Role Selection */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-3"
-                style={{ color: colors.darkNavy }}
-              >
-                👤 Select Your Role
-              </label>
-              <div className="space-y-3">
-                {roles.map((role) => {
-                  const isSelected = formData.role === role.id;
-                  const isHovered = hoveredRole === role.id;
-                  
-                  return (
-                    <div
-                      key={role.id}
-                      className={`p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                        loading ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                      style={{
-                        borderColor: isSelected ? colors.golden : colors.goldenAlpha40,
-                        backgroundColor: isSelected ? colors.goldenAlpha10 : 'transparent',
-                        ...(isSelected && { 
-                          boxShadow: `0 0 0 1px ${colors.goldenAlpha20}` 
-                        }),
-                        ...(isHovered && !isSelected && { 
-                          borderColor: colors.goldenAlpha60,
-                          backgroundColor: colors.goldenAlpha05 
-                        })
-                      }}
-                      onClick={() => !loading && handleChange({ target: { name: 'role', value: role.id } })}
-                      onMouseEnter={() => setHoveredRole(role.id)}
-                      onMouseLeave={() => setHoveredRole(null)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className={`w-10 h-10 sm:w-12 sm:h-12 border rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-300 ${
-                            isHovered ? 'scale-110' : ''
-                          }`}
-                          style={{
-                            background: role.gradient,
-                            borderColor: colors.goldenAlpha60
-                          }}
-                        >
-                          <span className="text-xl sm:text-2xl text-white">{role.emoji}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h4 
-                              className="text-base sm:text-lg font-semibold truncate"
-                              style={{ color: colors.darkNavy }}
-                            >
-                              {role.title}
-                            </h4>
-                            {isSelected && (
-                              <span 
-                                className="text-lg sm:text-xl flex-shrink-0 ml-2"
-                                style={{ color: colors.golden }}
-                              >
-                                ✅
-                              </span>
-                            )}
-                          </div>
-                          <p 
-                            className="text-sm truncate"
-                            style={{ color: colors.mediumGray }}
-                          >
-                            {role.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {roleError && (
-                <div 
-                  className="mt-2 flex items-center gap-2 text-sm"
-                  style={{ color: colors.golden }}
-                >
-                  <span>⚠️</span>
-                  {roleError}
-                </div>
-              )}
             </div>
 
             {/* Submit Button */}

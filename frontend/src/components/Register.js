@@ -17,7 +17,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [hoveredRole, setHoveredRole] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const roles = [
     {
@@ -110,28 +110,6 @@ const Register = () => {
     return true;
   };
 
-  // Demo registration - replace with actual API call
-  const registerUser = async (userData) => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // For demo purposes, accept any valid data
-    // In production, this should make a real API call
-    if (userData.name && userData.email && userData.password && userData.role) {
-      return {
-        id: Date.now(),
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-        token: `demo-token-${Date.now()}`,
-        isAuthenticated: true,
-        registeredAt: new Date().toISOString()
-      };
-    } else {
-      throw new Error('Registration failed');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -144,15 +122,32 @@ const Register = () => {
     }
 
     try {
-      // Register user (replace with actual API call)
-      const userData = await registerUser(formData);
+      // Register user with Supabase and backend
+      const { data: userData, error: registerError } = await register(
+        formData.email,
+        formData.password,
+        formData.role,
+        formData.name
+      );
+
+      if (registerError) {
+        throw new Error(registerError);
+      }
+
+      if (!userData) {
+        throw new Error('Registration failed. No user data received.');
+      }
+
+      // Get the route based on user's role from backend
+      const userRole = userData.role.toLowerCase();
+      const selectedRole = roles.find(role => role.id === userRole);
       
-      // Store user data in context and localStorage
-      login(userData);
-      
-      // Get the selected role's route
-      const selectedRole = roles.find(role => role.id === formData.role);
-      navigate(selectedRole.route);
+      if (selectedRole) {
+        navigate(selectedRole.route);
+      } else {
+        // Default fallback based on role
+        navigate(`/${userRole}/dashboard`);
+      }
       
     } catch (err) {
       console.error('Registration failed:', err);
