@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Navbar from "./components/Navbar";
 import AdvocateNavbar from "./Advocate components/Navbar";
-import AdvocateSidebar from "./Advocate components/Sidebar";
 import StudentLayout from "./Student components/Layout";
 import ClerkLayout from "./Clerk components/Layout";
 import Hero from "./components/Hero";
@@ -54,16 +53,6 @@ import ClerkCalendar from "./Clerk components/Calendar";
 import ClerkDocuments from "./Clerk components/Documents";
 import ClerkReports from "./Clerk components/Reports";
 import ClerkHelp from "./Clerk components/Help";
-import AdminLayout from "./Admin components/Layout";
-import AdminDashboard from "./Admin pages/Dashboard";
-import AdminUsers from "./Admin pages/Users";
-import AdminAnalytics from "./Admin pages/Analytics";
-import AdminPayments from "./Admin pages/Payments";
-import AdminContent from "./Admin pages/Content";
-import AdminSettings from "./Admin pages/Settings";
-import AdminReports from "./Admin pages/Reports";
-import AdminCourses from "./Admin pages/Courses";
-import AdminNotifications from "./Admin pages/Notifications";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -156,10 +145,6 @@ const AdvocateLayout = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-      <AdvocateSidebar 
-        collapsed={sidebarCollapsed}
-        setCollapsed={setSidebarCollapsed}
-      />
       <div className="flex-1 flex flex-col overflow-hidden">
         <AdvocateNavbar 
           sidebarCollapsed={sidebarCollapsed}
@@ -314,26 +299,6 @@ function AppContent() {
           <Route path="settings" element={<ClerkSettings />} />
           <Route path="help" element={<ClerkHelp />} />
           <Route path="offline-mode" element={<OfflineModeToggle />} />
-          <Route index element={<Navigate to="dashboard" replace />} />
-        </Route>
-
-        {/* Admin Routes */}
-        <Route path="/admin/*" element={
-          <ProtectedRoute>
-            <div className="fade-in">
-              <AdminLayout />
-            </div>
-          </ProtectedRoute>
-        }>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="analytics" element={<AdminAnalytics />} />
-          <Route path="payments" element={<AdminPayments />} />
-          <Route path="content" element={<AdminContent />} />
-          <Route path="courses" element={<AdminCourses />} />
-          <Route path="notifications" element={<AdminNotifications />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="reports" element={<AdminReports />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
         

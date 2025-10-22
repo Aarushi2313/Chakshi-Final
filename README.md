@@ -114,7 +114,7 @@ npm run dev
 - [Backend Documentation](./backend/README.md) - API and backend services
 
 ### Quick Guides
-- [Backend & Frontend Separation Guide](./docs/guides/BACKEND_FRONTEND_SEPARATION.md)
+- [🔗 Backend & Frontend Separation Guide](./docs/BACKEND_FRONTEND_SEPARATION.md) - **How they work independently**
 - [Payment Integration Guide](./docs/guides/PAYMENT_SETUP_GUIDE.md)
 - [Setup Guides](./docs/setup-guides/) - Detailed setup instructions
 

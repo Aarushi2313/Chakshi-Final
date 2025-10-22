@@ -369,41 +369,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Demo Notice */}
-        <div 
-          className="mt-6 p-4 border rounded-lg hover:bg-opacity-80 transition-all duration-300"
-          style={{
-            backgroundColor: colors.goldenAlpha10,
-            borderColor: colors.goldenAlpha40
-          }}
-        >
-          <div className="flex items-start gap-3">
-            <div 
-              className="w-8 h-8 border rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{
-                background: colors.primaryButtonGradient,
-                borderColor: colors.goldenAlpha60
-              }}
-            >
-              <span className="text-xl text-white">⭐</span>
-            </div>
-            <div>
-              <h4 
-                className="text-sm font-semibold mb-1"
-                style={{ color: colors.darkNavy }}
-              >
-                Demo Mode Active
-              </h4>
-              <p 
-                className="text-xs leading-relaxed"
-                style={{ color: colors.mediumGray }}
-              >
-                You can sign in with any email and password. Just select your role and click "Sign In" to explore the platform.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Quick Access */}
         <div className="mt-4 text-center">
           <button 

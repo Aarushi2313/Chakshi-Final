@@ -421,21 +421,6 @@ const Register = () => {
           </p>
         </div>
 
-        {/* Demo Notice */}
-        <div className="mt-4 md:mt-6 p-3 md:p-4 bg-[#b69d74]/10 border border-[#b69d74]/40 rounded-lg hover:bg-[#b69d74]/15 transition-all duration-300">
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-[#b69d74] to-[#b69d74]/85 border border-[#b69d74]/40 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-xs md:text-sm">ℹ️</span>
-            </div>
-            <div>
-              <h4 className="text-xs md:text-sm font-semibold text-[#1f2839] mb-1">Demo Mode Active</h4>
-              <p className="text-xs text-[#6b7280] leading-relaxed">
-                Registration will create a demo account. Fill in all fields and select your role to get started exploring the platform.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Quick Access */}
         <div className="mt-3 sm:mt-4 text-center">
           <button 

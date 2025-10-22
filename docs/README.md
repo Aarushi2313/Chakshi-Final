@@ -11,7 +11,9 @@ docs/
 ├── features/           # Feature-specific documentation
 ├── implementation/     # Implementation guides
 ├── guides/             # Setup and configuration guides
-└── setup-guides/       # Detailed setup instructions
+├── setup-guides/       # Detailed setup instructions
+├── sample-data/        # Sample contracts and test files
+└── *.md                # Project documentation (WHAT_I_DID, INTEGRATION_SUMMARY, etc.)
 ```
 
 ---
@@ -20,8 +22,24 @@ docs/
 
 ### Getting Started
 - [Main README](../README.md) - Project overview and quick start
-- [Backend & Frontend Separation Guide](./guides/BACKEND_FRONTEND_SEPARATION.md)
+- [Quick Start Guide](./QUICK_START.md) - Get running in 5 minutes
+- [Setup Guide](./SETUP_GUIDE.md) - Complete setup instructions
 - [Setup Guides](./setup-guides/) - Detailed setup instructions
+
+### 🏗️ Architecture & Separation (IMPORTANT)
+- [✅ **FINAL CONFIRMATION**](./FINAL_SEPARATION_CONFIRMATION.md) - **Everything is properly separated!**
+- [🔗 Backend & Frontend Separation Guide](./BACKEND_FRONTEND_SEPARATION.md) - Complete guide on independence
+- [📊 Architecture Overview](./ARCHITECTURE_OVERVIEW.md) - Visual diagrams and system flow
+- [📋 Verification Report](./SEPARATION_VERIFICATION_REPORT.md) - Automated scan results
+- [⚡ Quick Reference Card](./SEPARATION_QUICK_REF.md) - Commands and checklist
+- [📝 Summary](./SEPARATION_SUMMARY.md) - Executive summary
+
+### Project Documentation
+- [What I Did](./WHAT_I_DID.md) - Complete implementation history
+- [Integration Summary](./INTEGRATION_SUMMARY.md) - Frontend-Backend integration
+- [Docs Organization](./DOCS_ORGANIZATION.md) - How documentation is organized
+- [Project Structure](./PROJECT_STRUCTURE.txt) - Project folder structure
+- [Backend Analysis](./BACKEND_ANALYSIS.md) - Understanding the backend
 
 ### User Interfaces
 - [Admin Documentation](./admin/) - Admin panel features and usage
@@ -129,6 +147,11 @@ docs/
 - **Initial Setup**: [setup-guides/](./setup-guides/)
 - **Payment Integration**: [guides/PAYMENT_SETUP_GUIDE.md](./guides/PAYMENT_SETUP_GUIDE.md)
 - **Frontend/Backend Separation**: [guides/BACKEND_FRONTEND_SEPARATION.md](./guides/BACKEND_FRONTEND_SEPARATION.md)
+- **Testing**: Use sample files in [sample-data/](./sample-data/)
+
+### Additional Resources
+- **Sample Contracts**: [sample-data/](./sample-data/) - Test files for development
+- **Environment Template**: [setup-guides/env-template.txt](./setup-guides/env-template.txt)
 
 ---
 
@@ -166,4 +189,16 @@ When adding new documentation:
 
 **Happy Coding! 🚀**
 
-*Last Updated: October 18, 2025*
+---
+
+## 📦 Recent Updates
+
+### October 22, 2025 - Major Organization Update
+- ✅ Moved all documentation to `docs/` folder
+- ✅ Moved frontend config files (`.eslintrc.js`, `.npmrc`) to `frontend/` folder
+- ✅ Created `sample-data/` folder for test files
+- ✅ Moved environment template to `setup-guides/`
+- ✅ Cleaned up root directory - only essential files remain
+- ✅ Updated documentation index
+
+*Last Updated: October 22, 2025*
